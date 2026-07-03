@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon GamePlatform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div id="app">
+        <div id="view-profile" class="view active">
+            <header><h2>Профиль</h2></header>
+            <div class="glass-card text-center">
+                <div class="avatar-container" id="player-frame">
+                    <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=ELION" alt="Avatar" class="avatar" id="profile-avatar">
+                </div>
+                <h3 id="profile-username" class="mb-10">ELION <i class="fa-solid fa-pen text-cyan" style="cursor:pointer; font-size: 14px; margin-left: 5px;" onclick="openModal('edit-profile-modal')"></i></h3>
+                <div class="balance-display">
+                    <span id="main-balance">0</span> <i class="fa-solid fa-gem text-cyan"></i>
+                </div>
+                <button class="btn btn-neon-blue" onclick="openModal('deposit-modal')">Пополнить баланс</button>
+            </div>
+
+            <div class="glass-card mt-20">
+                <h3><i class="fa-solid fa-chart-simple text-cyan"></i> Игровая статистика</h3>
+                <div class="flex-between mt-10">
+                    <span>Всего сыграно игр:</span>
+                    <span id="stat-total" class="font-bold">0</span>
+                </div>
+                <div class="flex-between mt-10">
+                    <span>Успешных побед:</span>
+                    <span id="stat-wins" class="font-bold text-cyan">0</span>
+                </div>
+                <div class="flex-between mt-10">
+                    <span>В стейкинге сейчас:</span>
+                    <span id="stat-staked" class="font-bold text-purple">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-invest" class="view">
+            <header><h2>Стейкинг</h2></header>
+            <div class="glass-card text-center">
+                <p>Доходность: <span id="invest-rate" class="highlight">4%</span> / 24 часа</p>
+                
+                <div style="display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px;" class="mt-20 mb-20">
+                    <div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5);">Заморожено</div>
+                        <div id="staked-amount" class="font-bold text-cyan" style="font-size: 18px;">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5);">Накопленный доход</div>
+                        <div id="staked-profit" class="font-bold text-purple" style="font-size: 18px;">0.0000</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="number" id="invest-amount" placeholder="Сумма (мин. 100)">
+                </div>
+                <div class="flex-between gap-10 mt-10">
+                    <button class="btn btn-neon-purple w-50" onclick="processFreeze()">Заморозить</button>
+                    <button class="btn btn-neon-cyan w-50" onclick="processClaimStaking()">Снять доход</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-games" class="view">
+            <header><h2>Игры</h2></header>
+            <div class="live-feed glass-card text-sm" id="live-feed"></div>
+            <div class="games-grid mt-20">
+                <div class="game-card glass-card" onclick="openGame('game-crash')">
+                    <i class="fa-solid fa-rocket game-icon text-cyan"></i>
+                    <h3>Crash</h3>
+                </div>
+                <div class="game-card glass-card" onclick="openGame('game-mines')">
+                    <i class="fa-solid fa-bomb game-icon text-purple"></i>
+                    <h3>Mines</h3>
+                </div>
+                <div class="game-card glass-card" onclick="openGame('game-coinflip')">
+                    <i class="fa-solid fa-coins game-icon text-cyan"></i>
+                    <h3>CoinFlip</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-referrals" class="view">
+            <header><h2>Рефералы</h2></header>
+            <div class="glass-card">
+                <h3>Пригласить друзей</h3>
+                <p class="text-sm mt-10" style="color: rgba(255,255,255,0.6);">Получайте дополнительный бонус от активности ваших партнёров.</p>
+                <div class="flex-between gap-10 mt-15">
+                    <input type="text" id="ref-link-input" readonly value="https://t.me/NeonPlatformBot?start=elion" style="font-size:14px;">
+                    <button class="btn btn-neon-cyan" style="padding: 14px 20px;" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i></button>
+                </div>
+            </div>
+
+            <div class="glass-card mt-20">
+                <div class="flex-between">
+                    <h3>Ваша команда</h3>
+                    <span id="ref-count-page" class="font-bold text-purple" style="font-size: 18px;">0</span>
+                </div>
+                <div class="progress-bar-bg mt-10"><div class="progress-bar-fill bg-purple" id="ref-progress"></div></div>
+                <div class="leaderboard-list mt-20" id="referrals-list"></div>
+            </div>
+        </div>
+
+        <div id="view-leaderboard" class="view">
+            <header><h2>Рейтинг</h2></header>
+            <div class="leaderboard-list" id="leaderboard-list"></div>
+        </div>
+
+        <div id="game-crash" class="view game-interface">
+            <header>
+                <button class="btn-icon" onclick="closeGame()"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2>Crash Live</h2>
+                <div class="mini-balance"><span class="nav-balance">0</span> <i class="fa-solid fa-gem text-cyan"></i></div>
+            </header>
+            
+            <div class="history-ribbon" id="crash-global-history"></div>
+
+            <div class="glass-card text-center" style="padding-top: 10px;">
+                <div class="crash-arena" id="crash-canvas">
+                    <div class="crash-grid-bg"></div>
+                    <div id="crash-multiplier" class="crash-text">1.00x</div>
+                    <div class="rocket-wrapper waiting" id="crash-rocket">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <div class="explosion-effect" id="crash-explosion">
+                        <i class="fa-solid fa-burst"></i>
+                    </div>
+                </div>
+
+                <input type="number" id="crash-bet" placeholder="Ставка" value="100" class="mt-10">
+                <button class="btn btn-neon-cyan mt-10 w-100" id="btn-crash-action" onclick="toggleCrash()">Сделать ставку</button>
+                
+                <div class="personal-history" id="crash-user-history"></div>
+            </div>
+        </div>
+
+        <div id="game-mines" class="view game-interface">
+            <header>
+                <button class="btn-icon" onclick="closeGame()"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2>Mines</h2>
+                <div class="mini-balance"><span class="nav-balance">0</span> <i class="fa-solid fa-gem text-cyan"></i></div>
+            </header>
+            <div class="glass-card">
+                <div class="flex-between mb-10">
+                    <input type="number" id="mines-bet" placeholder="Ставка" value="100" class="w-45">
+                    <input type="number" id="mines-count" placeholder="Мин (1-24)" value="3" class="w-45">
+                </div>
+                <button class="btn btn-neon-purple w-100 mb-20" id="btn-mines-start" onclick="startMines()">Начать игру</button>
+                <div id="mines-grid" class="mines-grid disabled"></div>
+                <button class="btn btn-neon-cyan w-100 mt-20 hidden" id="btn-mines-cashout" onclick="cashoutMines()">Забрать <span id="mines-win-amount">0</span></button>
+                
+                <h4 class="mt-20 mb-10 text-sm style-label" style="opacity:0.6">История игр (Mines)</h4>
+                <div class="personal-history" id="mines-user-history"></div>
+            </div>
+        </div>
+
+        <div id="game-coinflip" class="view game-interface">
+            <header>
+                <button class="btn-icon" onclick="closeGame()"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2>CoinFlip</h2>
+                <div class="mini-balance"><span class="nav-balance">0</span> <i class="fa-solid fa-gem text-cyan"></i></div>
+            </header>
+            <div class="glass-card text-center">
+                <div id="coin-visual" class="coin-visual"><i class="fa-solid fa-meteor"></i></div>
+                <input type="number" id="coin-bet" placeholder="Ставка" value="100" class="mt-20 w-100">
+                <div class="flex-between mt-20 gap-10">
+                    <button class="btn btn-neon-cyan w-50" onclick="playCoinFlip('heads')">Орел</button>
+                    <button class="btn btn-neon-purple w-50" onclick="playCoinFlip('tails')">Решка</button>
+                </div>
+
+                <h4 class="mt-20 mb-10 text-sm style-label" style="opacity:0.6; text-align: left;">История игр (CoinFlip)</h4>
+                <div class="personal-history" id="coinflip-user-history"></div>
+            </div>
+        </div>
+
+        <div id="deposit-modal" class="modal">
+            <div class="modal-content glass-card">
+                <span class="close" onclick="closeModal('deposit-modal')">&times;</span>
+                <h3 class="text-center mb-20">Пополнение</h3>
+                <input type="number" id="deposit-amount" placeholder="Введите сумму" value="1000">
+                <button class="btn btn-neon-cyan mt-20 w-100" onclick="processDeposit()">Оплатить</button>
+            </div>
+        </div>
+
+        <div id="edit-profile-modal" class="modal">
+            <div class="modal-content glass-card">
+                <span class="close" onclick="closeModal('edit-profile-modal')">&times;</span>
+                <h3 class="text-center mb-20">Настройки профиля</h3>
+                <div class="mb-15">
+                    <label style="display:block; margin-bottom:5px; font-size:14px; color:rgba(255,255,255,0.6);">Никнейм</label>
+                    <input type="text" id="edit-username" value="ELION">
+                </div>
+                <div class="mb-20">
+                    <label style="display:block; margin-bottom:5px; font-size:14px; color:rgba(255,255,255,0.6);">Аватар (Seed код)</label>
+                    <input type="text" id="edit-avatar-seed" value="ELION">
+                </div>
+                <button class="btn btn-neon-purple w-100" onclick="saveProfileSettings()">Сохранить изменения</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav" id="main-nav">
+            <button class="nav-btn active" data-target="view-profile"><i class="fa-solid fa-user"></i></button>
+            <button class="nav-btn" data-target="view-invest"><i class="fa-solid fa-bolt"></i></button>
+            <button class="nav-btn" data-target="view-games"><i class="fa-solid fa-gamepad"></i></button>
+            <button class="nav-btn" data-target="view-referrals"><i class="fa-solid fa-users"></i></button>
+            <button class="nav-btn" data-target="view-leaderboard"><i class="fa-solid fa-trophy"></i></button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="crash.js"></script>
+    <script src="mines.js"></script>
+    <script src="coinflip.js"></script>
+</body>
+</html>
